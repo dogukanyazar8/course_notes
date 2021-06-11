@@ -78,3 +78,13 @@ void set_random_array(int* p, int size)
         p[i] = rand() % 1000;
     }
 }
+
+static int icmp(const void* vp1, const void* vp2)
+{
+	return *(const int*)vp1 - *(const int*)vp2;
+}
+
+void sort_array(int* p, int size)
+{
+    qsort(p, size, sizeof (*p), icmp);
+}
