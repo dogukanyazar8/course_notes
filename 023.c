@@ -843,15 +843,3 @@ int main()
 
 */
 
-#include <stdio.h>
-
-int main()
-{
-	int a[10] = {5, 17, 22, 8, 4, 15, 78, 112, 48, 24};
-
-	for (int i = 0; i < 10; ++i) {
-		printf("%d \n", i[a]);
-	}
-}
-
-

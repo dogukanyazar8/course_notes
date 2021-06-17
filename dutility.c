@@ -88,3 +88,13 @@ void sort_array(int* p, int size)
 {
     qsort(p, size, sizeof (*p), icmp);
 }
+
+void sgets(char* p)
+{
+    int c;
+
+    while ((c = getchar()) != '\n' && c != EOF)
+        *p++ = c;
+    
+    *p = '\0';
+}
