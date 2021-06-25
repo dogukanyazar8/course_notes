@@ -69,6 +69,7 @@ void print_array(const int* p, int size)
             printf("\n");
         printf("%3d ", p[i]);
     }
+    printf("\n");
 }
 
 void set_random_array(int* p, int size)
