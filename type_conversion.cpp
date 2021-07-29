@@ -36,26 +36,26 @@ int main()
 	long long ll1 = 15;
 	unsigned int ui3 = 20;
 
-	cout << typeid(c1 + c2).name() << "\n\n";	//char olan operandlar int türüne dönüþtürülecek. char - char -> iþlem int.
+	cout << typeid(c1 + c2).name() << "\n\n";	//char olan operandlar int tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. char - char -> islem int.
 
-	cout << typeid(s1 + s2).name() << "\n\n";	//short olan operandlar int türüne dönüþtürülecek. short - short -> iþlem int.
+	cout << typeid(s1 + s2).name() << "\n\n";	//short olan operandlar int tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. short - short -> islem int.
 
-	cout << typeid(c3).name() << "\n\n";		//herhangi bir dönüþtürme yok.
-	cout << typeid(+c3).name() << "\n\n";		//iþaret operatörü. char olan operand int türüne dönüþtürülecek. -> iþlem int.
+	cout << typeid(c3).name() << "\n\n";		//herhangi bir dÃ¶nÃ¼stÃ¼rme yok.
+	cout << typeid(+c3).name() << "\n\n";		//isaret operatÃ¶rÃ¼. char olan operand int tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. -> islem int.
 
-	cout << typeid(ld1 + d1).name() << "\n\n";	//double olan operand long double türüne dönüþtürülecek. long - double -> iþlem long double.
+	cout << typeid(ld1 + d1).name() << "\n\n";	//double olan operand long double tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. long - double -> islem long double.
 
-	cout << typeid(d2 + i1).name() << "\n\n";	//int olan operand double türüne dönüþtürülecek. double - int -> iþlem double.
+	cout << typeid(d2 + i1).name() << "\n\n";	//int olan operand double tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. double - int -> islem double.
 
-	cout << typeid(l1 + c4).name() << "\n\n";	//char olan operand int türüne dönüþtürülecek. long - int -> iþlem long.
+	cout << typeid(l1 + c4).name() << "\n\n";	//char olan operand int tÃ¼rÃ¼ne dÃ¶nÃ¼stÃ¼rÃ¼lecek. long - int -> islem long.
 	
-	cout << typeid(i2 + ui1).name() << "\n\n";	//operandlarin derecesi eþit. int + unsigned -> iþlem unsigned int.
+	cout << typeid(i2 + ui1).name() << "\n\n";	//operandlarin derecesi esit. int + unsigned -> islem unsigned int.
 
-	cout << typeid(l2 + ul1).name() << "\n\n";	//operandlarin derecesi farklý fakat iþaretsiz tür var. long + unsigned int-> iþlem unsigned long.
- 
-	cout << typeid(l3 + ui2).name() << "\n\n";	//operandlarin derecesi farklý fakat iþaretsiz tür var. long (4 byte) + unsigned int (4 byte) -> iþlem unsigned long.
+	cout << typeid(l2 + ul1).name() << "\n\n";	//operandlarin derecesi farkli fakat isaretsiz tÃ¼r var. long + unsigned int-> islem unsigned long.
 
-	cout << typeid(ll1 + ui3).name() << "\n\n";	//operandlarin derecesi farklý fakat iþaretsiz tür var. long long (8 byte) + unsigned int (4 byte) -> iþlem long long.
+	cout << typeid(l3 + ui2).name() << "\n\n";	//operandlarin derecesi farkli fakat isaretsiz tÃ¼r var. long (4 byte) + unsigned int (4 byte) -> islem unsigned long.
+
+	cout << typeid(ll1 + ui3).name() << "\n\n";	//operandlarin derecesi farkli fakat isaretsiz tÃ¼r var. long long (8 byte) + unsigned int (4 byte) -> islem long long.
 }
 
 */
