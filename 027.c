@@ -439,21 +439,454 @@ print_array fonksiyon bildirimi -> void print_array(const int* p, int size);
 
 Bu fonksiyon diziyi değiştirmek amaçlı değil, dizinin elemanlarını salt okumak, erişmek amaçlı kullanılıyor.
 
+Bundan dolayı fonksiyon parametresi -> const int *
+
 ------------------
 
+Örnek olarak bir süre önce yazdığımız sort_array fonksiyonu. (sort_array fonksiyonu bir int dizinin elemanlarını sıralıyor)
 
+sort_array fonksiyon bildirimi -> void sort_array(int* p, int size);
+
+Bu fonksiyon diziyi değiştirmek amaçlı kullanılıyor.
+
+Bundan dolayı fonksiyon parametresi -> int *
+
+------------------
+
+Parametreyi const int * yani low level const yapmamızın nedeni hem kodun niyetini, programıncının niyetini belli ediyor.
+Aynı zamanda bufonksiyonun kodunu yazarken, pointer vasıtıyla değiştirmememiz gereken nesneleri yanlışlıkla değiştirdiğimizde sentaks hatası olacaktı. 
+
+------------------
+
+Ayrıca top level const, pointer parametre olarak değil de daha çok yerel veya global pointerler için karşımıza çıkar.
+
+Mesela embedded bit programda bir pointer değişkenimizin bir register adresi tutması ve bunun değerinin asla değişmemesi gerekiyor. O zaman bunu top level const yapabiliriz. 
+
+int *const p = (int *)0xB800;
+
+const anahtar sözcüğünü yukarıdaki gibi kullandığımızda, bir artık p'nin gösterdiği değerin hayatı boyunca değiştirilemeyeceğini ifade ediyoruz.
+
+------------------
+
+Pointer Aritmetiği
+
+Pointer aritmetiğiyle anlatılmak istenilen adreslerle ilgili yapılan bazı işlemlerde dilin sentaks kuralları kastediliyor.
+
+Adreslerle yapılan toplama, çıkarma, ++ operatörünün adres olması, -- operatörünün adres olması gibi bazı işlemler tam sayılar üzerinde yapılan toplama çıkarma işlemleri gibi değil.
+
+------------------
+
+C dilinde bir adresle bir tam sayı toplanabilir. 
+C dilinde bir tam sayıyla bir adres toplanabilir.
+C dilinde bir adresten bir tam sayı çıkartılabilir.
+C dilinde bir tam sayıdan bir adresin çıkartılamaz. Sentaks hatasıdır.
+
+adr ifadesi bir adresi, ival de bir tam sayıyı gösterdiğini düşünelim.
+
+adr + ival //legal
+ival + adr //legal
+adr - ival //legal
+ival - adr //illegal
+
+Yukarıdaki bütün bu ifadelerin değeri bir adrestir. Yani bu işlemlerden elde edilen değer bir adrestir.
+
+------
+
+#include <stdio.h>
+
+int main()
+{
+   int *ptr;
+
+   5 - ptr; //sentaks hatası
+}
+
+------
+
+Bir nesne adresine 1 toplarsak, bellekte ondan sonra gelen nesnenin adresini elde ediyoruz.
+
+Bir dizinin bir elemanının adresine 1 toplarsak, bu dizinin bir sonraki elemanının adresini elde ediyoruz.
+Bir dizinin bir elemanının adresinden 1 çıkartırsak, bu dizinin bir önceki elemanının adresini elde ediyoruz.
+
+------
+
+5 elemanlı arr isimli bir dizimiz var. 
+
+Eğer bu arr dizisinin ilk elemanının adresi 5600 ise, ikinci elemanının adresi 5604'dür. int türü 4 byte olduğuna göre.
+
+Şimdi bu dizinin ilk elemanının adresine 1 topladığımızda, eğer bu işlem tam sayı toplama işlemi gibi olsaydı 5601 elde edecektik.
+
+Ama pointer semantiğiyle 5601 değil, 5604 olacak.
+
+-------
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%p\n", &arr[i]);
+   }
+}
+
+Adreslerde hexadecimal sayı sistemi kullanılıyor, dizinin elemanlarının adreslerini yazdırdık. int türü 4 byte olduğu için 4'er 4'er artıyor.
+
+Kodun ekran çıktısı:
+
+0028ff28
+0028ff2c
+0028ff30
+0028ff34
+0028ff38
+
+-------
+
+Yukarıdaki kod ile bağlantılı olarak, dizinin ilk elemanının adresiyle döngü değişkenini toplayıp, döngünün her turunda ekrana adres bilgisini yazdırır gibi yazdırıyoruz.
+Dizinin herhangi bir elemanının adresine 1 eklendiğinde, bir sonraki elemanının adresini elde ederiz. Aşağıdaki kod bunun bir örneği.
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%p %p\n", &arr[i], arr + i);
+   }
+}
+
+Kodun ekran çıktısı:
+
+0028ff28 0028ff28
+0028ff2c 0028ff2c
+0028ff30 0028ff30
+0028ff34 0028ff34
+0028ff38 0028ff38
+
+-------
+
+Eğer arr dizisinin türü int değil de char türünden olsaydı. Bu sefer dizinin elemanlarının adresleri 4'er değil de 1'er olarak artacaktı.
+Yine int türünde olduğu gibi, char türünden de bir dizinin elemanının adresiyle 1 topladığımızda, bir sonraki elemanın adresini elde ederiz.
+
+#include <stdio.h>
+
+int main()
+{
+   char arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%p %p\n", &arr[i], arr + i);
+   }
+}
+
+Kodun ekran çıktısı:
+
+0028ff37 0028ff37
+0028ff38 0028ff38
+0028ff39 0028ff39
+0028ff3a 0028ff3a
+0028ff3b 0028ff3b
+
+-------
+
+Eğer arr dizisinin türü int değil de double türünden olsaydı. Bu sefer dizinin elemanlarının adresleri 4'er değil de 8'er olarak artacaktı.
+Yine int türünde olduğu gibi, double türünden de bir dizinin elemanının adresiyle 1 topladığımızda, bir sonraki elemanın adresini elde ederiz.
+
+#include <stdio.h>
+
+int main()
+{
+   double arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%p %p\n", &arr[i], arr + i);
+   }
+}
+
+Kodun ekran çıktısı:
+
+0028ff10 0028ff10
+0028ff18 0028ff18
+0028ff20 0028ff20
+0028ff28 0028ff28
+0028ff30 0028ff30
+
+-------
+
+Eğer bu kural olmasaydı, bir dizinin bir elemanının adresinden yola çıkarak, 
+dizinin bir önceki veya bir sonraki elemanının adresini elde etmek istediğimizde bizim derleyicimiz için aşağıdaki değerleri kullanmamız gerekti.
+
+char     dizi için 1
+short    dizi için 2
+int      dizi için 4
+double   dizi için 8
+
+Dilin kurallarına göre bir adres ile bir tam sayı topladığımızda her zaman ondan sonra gelen nesnenin adresini elde ederiz.
+
+Tabiki sadece 1 toplamak zorunda değiliz, bu 5 de olabilirdi. Bir adresle 5 topladığımızda, o adresten 5 sonra gelen nesnenin adresini elde ederiz.
+
+-------
+
+Bir dizinin n indisli elemanının adresini almakla, dizinin ilk elemanının adresine n eklemek arasında hiçbir fark yok.
+
+&a[n] <----> a + n
+
+Bu kurala göre, arr dizisinin 3 indisli elemanın adresi demek, aslında arr + 3 demek.
+
+&a[3] <----> a + 3
+
+--------
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%d %d\n", arr[i], *(arr + i));
+   }
+}
+
+--------
+
+a[i]
+*(a + i)
+*(i + a)
+i[a]
+
+--------
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[5] = { 0, 1, 2, 3, 4};
+
+   for (int i = 0; i < 5; ++i){
+      printf("%d %d %d\n", arr[i], *(arr + i), *(i + arr));
+   }
+}
+
+
+--------
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+   int *p = arr;
+
+   printf("%d\n", *p);
+   ++p;
+   printf("%d\n", *p);
+}
+
+--------
+
+printf çağrısındaki ifadelerin hepsi dizinin i indisli elemanını ekrana yazdırıyor.
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+   int *p = arr;
+
+   for (int i = 0; i < 10; ++i){
+      printf("%d %d %d %d\n", arr[i], *(arr + i), *(i + arr), *p);
+      ++p;
+   }
+}
+
+--------
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+   //int *ptr = &arr[5];
+   int *ptr = arr + 5;
+
+   printf("%d\n", *ptr);
+}
+
+--------
+
+C dilinde toplama operatörünün her iki operandı adres olamaz. Adres ile adres toplanamaz, sentaks hatasıdır. 
+
+C dilinde çıkarma operatörünün her iki operandı adres olabilir. İki adres birbirinden çıkartılabilir. Bu işlemden elde edilen değer işaretli tamsayıdır.
+
+#include <stdio.h>
+
+int main()
+{
+   int arr[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+   
+   int *p1 = &arr[5];
+   int *p2 = &arr[8];
+
+   printf("p1 - p2 = %d\n", p1 - p2);
+   printf("p2 - p1 = %d\n", p2 - p1);
+}
+
+Kodun ekran çıktısı:
+
+p1 - p2 = -3
+p2 - p1 = 3
+
+Adreslerin ait olduğu nesnelerin türünden bağımsız olarak, yine aynı sonucu elde ederiz.
+Örneğin int değil de double olsaydı pointer türü, değişen bir şey olmayacaktı bu kod işlem için.
+--------
+
+Kısaca Notlar.
+
+adres + tamsayı = adres
+tamsayı + adres = adres
+adres - tamsayı = adres
+tamsayı - adres = sentaks hatası
+adres + adres = sentaks hatası
+adres - adres = işaretli tamsayı
+
+Yukarıda legal olan işlemlerin, doğru ya da anlamlı olması için aynı dizinin elemanlarının adresleri söz konusu olması gerekiyor.
+
+int x = 10;
+int y = 20;
+
+&x - &y ->>>> Bu işlem legal. Fakat bu koddan elde edebileceğimiz hiçbir fayda yok.
+
+Bağımsız, tekil değişkenlerin adreslerini birbirinden çıkartmanın hiçbir anlamı yok.
+Bütün bu işlemlerin anlamlı olması için aynı dizinin elemanlarının adresleri olması gerekir.
+
+--------
+
+index / subscript operatörü []
+
+Operatör öncelik seviyesine göre 1. öncelik seviyesinde.
+
+1 - [ ] () . -> 
+
+Öncelik yönü soldan sağa, binary operator.
+
+Bir operandı köşeli parantezin içinde, diğer operandı parantezin dışında.
+
+Derleyici x[y] ifadesiyle karşılaştığında,
+
+Köşeli parantezin dışındaki operandı, toplama operatörüyle köşeli parantezin içindeki operand ile toplayacak bir ifade oluşturuyor.
+Buradan elde ettiği ifadeyi de içerik operatörünün operandı yapıyor.
+
+x[y] == *(x + y)
+
+Bu operatörün dıştaki operandının bir dizi olma zorunluluğu yok.
+Ya da içteki operandın pozitif bir tam sayı olma zorunluluğu yok.
+Önemli olan dıştaki operand ile içteki operandın toplanmasıyla bir adresin elde edilmesi.
+
+Çünkü içerik operatörünün operandı bir adres olmak zorunda.
+
+Bu operatörün dıştaki ya da içteki operandı bir pointer değişken de olabilir.
+
+a[i] == *(a + i)
+i[a] == *(i + a)
+
+------
+
+#include <stdio.h>
+
+int main()
+{
+   int a[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+   for (int i = 0; i < 10; ++i)
+      printf("%d %d\n", a[i], i[a]);
+}
+
+------
+
+#include <stdio.h>
+
+int main()
+{
+   int x = 10;
+
+   ++(&x)[0];
+
+   //++x* (&x + 0); x'in değeri 1 artacak.
+
+   printf("%d\n", x);
+}
+
+------
+
+ptr[0] == *ptr
+
+a[0] == *a
+
+------
+
+Bu işlemlerde dizinin taşması tabiki de tanımsız davranıştır.
+Toplama çıkarma işlemlerinde eriştiğimiz bellek alanı bize ait bir bellek alanı değilse, bu kesinlikle tanımsız davranıştır.
+
+#include <stdio.h>
+
+int main()
+{
+   int a[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+   int *ptr = a + 5;
+
+   printf("%d\n", *ptr);   //5
+   printf("%d\n", ptr[0]); //5
+   printf("%d\n", ptr[3]); //8
+   printf("%d\n", ptr[-2]); //3
+   printf("%d\n", ptr[9]); //tanımsız davranış
+}
+
+------
+
+Köşeli parantez operatörü aslında bir kısayol gibi. 
+Bu operatör olmasaydı aşağıdaki gibi kullanacaktık.
+
+a[b] yerine *(a + b)
+
+------
+
+SORU: 
+
+ptr, a isimli bir dizinin bir elemanını göstermektedir.
+ptr'nin gösterdiği dizi elemanının indeksi nedir?
+
+ptr - a
+
+Elimizde bir dizinin bir elemanının adresi varsa, bizim elimizde o dizinin o elemanının indeksi de var.
+
+Adresten indekse geçiş yapmak için, dizinin elemanının adresinden dizinin ilk elemanının adresini çıkartacağız.
+
+Diziler söz konusu olduğunda, indeksten adrese, adresten indekse geçiş yapabiliriz.
+
+------
+
+SORU: 
+
+ptr, a isimli bir dizinin 5 indisli elemanını göstermektedir.
+ptr'nin gösterdiği dizi elemanının adresi nedir?
+
+a + 5
+ptr + 5
+
+------
+
+Adresten indekse geçmek için dizinin başlangıç adresini çıkartacağız.
+Indeksten adrese geçmek için dizinin başlangıç adresini toplayacağız.
 
 */
 
 #include <stdio.h>
-#include <string.h>
-
-#define SIZE 100
 
 int main()
 {
-   char a[SIZE] = "dogukanyazar";
-   char b[SIZE] = "dogukanyazar";
 
-   printf("comparison = %d\n", strcmp(a,b));
 }
